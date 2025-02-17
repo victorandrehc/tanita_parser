@@ -7,3 +7,6 @@
 4. Lauch Jupyter
     `jupyter notebook --ip=0.0.0.0 --port=8888 --no-browser`
 5. Execute `tanita_script.ipyb`
+
+
+The information was sourced from [here](https://github.com/cab938/tanita)
