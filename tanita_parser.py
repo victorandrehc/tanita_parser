@@ -2,6 +2,7 @@ from datetime import datetime
 from tabulate import tabulate
 import re
 import matplotlib.pyplot as plt
+import matplotlib.dates as mdates
 
 # Directory containing the measurement files
 LINE_SEPARATOR= "\n"
@@ -191,6 +192,9 @@ def plot_relevant_data(data_dict, header_mapping):
         plt.title(f"{labels[idx]}")
         plt.xlabel('Date and Time')
         plt.ylabel('Values')
+
+        plt.gca().xaxis.set_major_formatter(mdates.DateFormatter('%d/%m/%Y'))
+
         plt.xticks(rotation=45)  # Rotate x-axis labels for better readability
         plt.legend(loc='upper left')
         # Display the plot
