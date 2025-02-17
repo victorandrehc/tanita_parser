@@ -1,5 +1,5 @@
 # How to Run
-1. Create a vnenv called jupyter_env
+1. Create a venv called jupyter_env
 2. Enter the venv
     `source jupyter_env/bin/activate`
 3. Install itens from `requirements.txt`
