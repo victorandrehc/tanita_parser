@@ -27,7 +27,7 @@ HEADER_MAPPING = {
     "AG": "Age",
     "Hm": "Height",
     "AL": "Activity Level",
-    "FW": "Global Fat pct [%]",
+    "FW": "Global Fat [%]",
     "Fr": "Right Arm Fat [%]",
     "Fl": "Left Arm Fat [%]",
     "FR": "Right Leg Fat [%]",
@@ -43,7 +43,7 @@ HEADER_MAPPING = {
     "IF": "Visceral_fat_rating",
     "rA": "Metabolic_age",
     "rD": "Daily_calorie_intake [Kcal]",
-    "ww": "Global_body_water_pct [%]",
+    "ww": "Global Body Water [%]",
     "CS": "Unknown_BC"
 }
 
@@ -188,7 +188,7 @@ def plot_relevant_data(data_dict, header_mapping):
         plt.plot(datetime_values, y_values, label=labels[idx])
     
         # Formatting the plot
-        plt.title('Relevant Data Over Time')
+        plt.title(f"{labels[idx]}")
         plt.xlabel('Date and Time')
         plt.ylabel('Values')
         plt.xticks(rotation=45)  # Rotate x-axis labels for better readability
