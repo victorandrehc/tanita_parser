@@ -13,39 +13,39 @@ DATE_TIME_KEY = "datetime"
 
 # Mapping of Tanita headers to meaningful names
 HEADER_MAPPING = {
-    "{0": "Unknown_16", 
-    "~0": "Length unit", 
-    "~1": "Mass unit", 
-    "~2": "Unknown_4",
-    "~3": "Unknown_3",
-    "Bt": "Athlete mode",
-    "Wk": "Body_mass [kg]",
-    "MI": "BMI [Kg/m2]",
-    "MO": "Model",
-    "DT": "Measurement Date",
-    "Ti": "Measurement Time",
-    "GE": "Gender",
-    "AG": "Age",
-    "Hm": "Height",
-    "AL": "Activity Level",
-    "FW": "Global Fat [%]",
-    "Fr": "Right Arm Fat [%]",
-    "Fl": "Left Arm Fat [%]",
-    "FR": "Right Leg Fat [%]",
-    "FL": "Left Leg Fat [%]",
-    "FT": "Torso Fat[%]",
-    "mW": "Global Muscle [%]",
-    "mr": "Right Arm Muscle [%]",
-    "ml": "Left Arm Muscle [%]",
-    "mR": "Right Leg Muscle [%]",
-    "mL": "Left Leg Muscle [%]",
-    "mT": "Torso Muscle [%]",
-    "bW": "Estimated_bone_mass [Kg]",
-    "IF": "Visceral_fat_rating",
-    "rA": "Metabolic_age",
-    "rD": "Daily_calorie_intake [Kcal]",
-    "ww": "Global Body Water [%]",
-    "CS": "Unknown_BC"
+    "{0": ["Unknown_16", "Unknown_16"],
+    "~0": ["Length unit", "Unidade de Comprimento"] ,
+    "~1": ["Mass unit",  "Unidade de Massa"],
+    "~2": ["Unknown_4", "Unknown_4"],
+    "~3": ["Unknown_3", "Unknown_3"],
+    "Bt": ["Athlete mode", "Modo Atleta"],
+    "Wk": ["Body_mass [kg]", "Massa Coporal [Kg]"],
+    "MI": ["BMI [Kg/m2]", "IMC [Kg/m2]"],
+    "MO": ["Model","Modelo"],
+    "DT": ["Measurement Date","Data de Medição"],
+    "Ti": ["Measurement Time","Hora de Medição"],
+    "GE": ["Gender", "Genero Biologico"],
+    "AG": ["Age", "Idade"],
+    "Hm": ["Height", "Altura"],
+    "AL": ["Activity Level", "Nivel de Atividade"],
+    "FW": ["Global Fat [%]", "Gordura Total [%]"],
+    "Fr": ["Right Arm Fat [%]", "Gordura Braco direito [%]"],
+    "Fl": ["Left Arm Fat [%]", "Gordura braco Esquerdo [%]"],
+    "FR": ["Right Leg Fat [%]", "Gordura Perna Direita [%]"],
+    "FL": ["Left Leg Fat [%]", "Gordura Perna Esquerda [%]"],
+    "FT": ["Torso Fat[%]", "Gordura Torso [%]"],
+    "mW": ["Global Muscle [%]", "Musculo Total [%]"],
+    "mr": ["Right Arm Muscle [%]", "Musculo Braco Direito [%]"],
+    "ml": ["Left Arm Muscle [%]", "Musculo Braco Esquerdo [%]"],
+    "mR": ["Right Leg Muscle [%]", "Musculo Perna Direita [%]"],
+    "mL": ["Left Leg Muscle [%]", "Musculo Perna Esquerda [%]"],
+    "mT": ["Torso Muscle [%]", "Musculo Torso [%]"],
+    "bW": ["Estimated_bone_mass [Kg]", "Massa Ossea [Kg]"],
+    "IF": ["Visceral_fat_rating", "Grau de Gordura Viceral"],
+    "rA": ["Metabolic_age", "Idade Metabolica"],
+    "rD": ["Daily_calorie_intake [Kcal]", "Calorias Diarias [Kcal]"],
+    "ww": ["Global Body Water [%]", "Água Corporal Total [%]"],
+    "CS": ["Unknown_BC", "Unknown_BC"],
 }
 
 def parse_number(item):
@@ -150,7 +150,7 @@ def print_most_recent_info(data_dict, header_mapping):
             continue
         
         # Get the readable label from the header_mapping
-        label = header_mapping.get(key, key)
+        label = header_mapping.get(key, key)[1]
         
         # Get the most recent value (the last one in the list)
         most_recent_value = value[-1]
@@ -177,7 +177,7 @@ def plot_relevant_data(data_dict, header_mapping):
     'Wk', 'FW', 'Fr', 'Fl', 'FR', 'FL', 'FT', 'mr', 'ml', 'mR', 'mL', 
     'mT', 'IF', 'rD', 'ww'
     ]
-    labels = [header_mapping.get(key, key) for key in relevant_keys]
+    labels = [header_mapping.get(key, key)[1] for key in relevant_keys]
     
     # Create a new figure
     
