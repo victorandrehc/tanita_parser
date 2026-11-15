@@ -26,22 +26,23 @@ HEADER_MAPPING = {
     "Ti": ["Measurement Time","Hora de Medição"],
     "GE": ["Gender", "Genero Biologico"],
     "AG": ["Age", "Idade"],
-    "Hm": ["Height", "Altura"],
+    "Hm": ["Height [cm]", "Altura [cm]"],
     "AL": ["Activity Level", "Nivel de Atividade"],
     "FW": ["Global Fat [%]", "Gordura Total [%]"],
     "Fr": ["Right Arm Fat [%]", "Gordura Braco direito [%]"],
     "Fl": ["Left Arm Fat [%]", "Gordura braco Esquerdo [%]"],
     "FR": ["Right Leg Fat [%]", "Gordura Perna Direita [%]"],
     "FL": ["Left Leg Fat [%]", "Gordura Perna Esquerda [%]"],
-    "FT": ["Torso Fat[%]", "Gordura Torso [%]"],
-    "mW": ["Global Muscle [%]", "Musculo Total [%]"],
-    "mr": ["Right Arm Muscle [%]", "Musculo Braco Direito [%]"],
-    "ml": ["Left Arm Muscle [%]", "Musculo Braco Esquerdo [%]"],
-    "mR": ["Right Leg Muscle [%]", "Musculo Perna Direita [%]"],
-    "mL": ["Left Leg Muscle [%]", "Musculo Perna Esquerda [%]"],
-    "mT": ["Torso Muscle [%]", "Musculo Torso [%]"],
+    "FT": ["Torso Fat [%]", "Gordura Torso [%]"],
+    # The muscle values are masses in kg. The five segments add up to the total.
+    "mW": ["Global Muscle [kg]", "Musculo Total [kg]"],
+    "mr": ["Right Arm Muscle [kg]", "Musculo Braco Direito [kg]"],
+    "ml": ["Left Arm Muscle [kg]", "Musculo Braco Esquerdo [kg]"],
+    "mR": ["Right Leg Muscle [kg]", "Musculo Perna Direita [kg]"],
+    "mL": ["Left Leg Muscle [kg]", "Musculo Perna Esquerda [kg]"],
+    "mT": ["Torso Muscle [kg]", "Musculo Torso [kg]"],
     "bW": ["Estimated_bone_mass [Kg]", "Massa Ossea [Kg]"],
-    "IF": ["Visceral_fat_rating", "Grau de Gordura Viceral"],
+    "IF": ["Visceral_fat_rating", "Grau de Gordura Visceral"],
     "rA": ["Metabolic_age", "Idade Metabolica"],
     "rD": ["Daily_calorie_intake [Kcal]", "Calorias Diarias [Kcal]"],
     "ww": ["Global Body Water [%]", "Água Corporal Total [%]"],
@@ -117,27 +118,48 @@ def parse_line(line_list, parsed_dictionary):
         data = parser(item)
         parsed_dictionary[current_key].append(data)
         current_key = None
-    
-    parsed_dictionary[DATE_TIME_KEY] = []
-    for i in range(len(parsed_dictionary[DATE_KEY])):
-        date_str =  parsed_dictionary[DATE_KEY][i]
-        time_str = parsed_dictionary[TIME_KEY][i]
-        datetime_info = parse_date_time(date_str,time_str)
-        parsed_dictionary[DATE_TIME_KEY].append(datetime_info)
 
-            
+
+def build_datetime_list(parsed_dictionary):
+    # Build the datetime list one time, after all lines are parsed.
+    dates = parsed_dictionary.get(DATE_KEY, [])
+    times = parsed_dictionary.get(TIME_KEY, [])
+    parsed_dictionary[DATE_TIME_KEY] = [
+        parse_date_time(date_str, time_str)
+        for date_str, time_str in zip(dates, times)
+    ]
+
+
+def sort_by_datetime(parsed_dictionary):
+    # Put the measurements in time order. The report uses the last rows.
+    datetime_list = parsed_dictionary[DATE_TIME_KEY]
+    order = sorted(range(len(datetime_list)), key=lambda index: datetime_list[index])
+    for key, values in parsed_dictionary.items():
+        if len(values) == len(order):
+            parsed_dictionary[key] = [values[index] for index in order]
+
 
 def parse_tanita_csv(file):
     parsed_dictionary = {}
 
     content = file.read()
-    content_list = content.split(LINE_SEPARATOR)[:-1]
+    content_list = content.split(LINE_SEPARATOR)
 
     for line in content_list:
+        if not line.strip():
+            continue
         line_list = line.split(ITEM_SEPARATOR)
-        parse_line(line_list,parsed_dictionary)
-    
+        parse_line(line_list, parsed_dictionary)
+
+    build_datetime_list(parsed_dictionary)
+    sort_by_datetime(parsed_dictionary)
     return parsed_dictionary
+
+
+def load_csv(path):
+    # Read and parse one Tanita CSV file.
+    with open(path, "r", encoding="utf-8") as file:
+        return parse_tanita_csv(file)
 
 
 def print_most_recent_info(data_dict, header_mapping):
