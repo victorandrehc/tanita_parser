@@ -4,3 +4,6 @@ __pycache__/
 .ipynb_checkpoints/
 repo/
 *.vscode
+tanita_report*.pdf
+tanita_report*.html
+output/
