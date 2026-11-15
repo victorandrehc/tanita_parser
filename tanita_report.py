@@ -315,6 +315,9 @@ TEXT = {
         "fat_band": "8–20 %",
         "water_band": "50–65 %",
         "limit": "limite 12",
+        "x_axis": "Data",
+        "y_level": "Nível",
+        "y_years": "Anos",
         "file_written": "Arquivo gravado:",
         "count_measurements": "medições",
         "count_days": "dias com medição",
@@ -358,6 +361,9 @@ TEXT = {
         "fat_band": "8–20%",
         "water_band": "50–65%",
         "limit": "limit 12",
+        "x_axis": "Date",
+        "y_level": "Level",
+        "y_years": "Years",
         "file_written": "File written:",
         "count_measurements": "measurements",
         "count_days": "days with a measurement",
@@ -808,6 +814,11 @@ def style_dates(ax, limits, show_labels=True, dense=True, short=False):
         ax.tick_params(labelbottom=False)
 
 
+def axis_titles(ax, x_text, y_text, size=7):
+    ax.set_xlabel(x_text, fontsize=size, color=MUTED, labelpad=2)
+    ax.set_ylabel(y_text, fontsize=size, color=MUTED, labelpad=2)
+
+
 def plot_series(ax, dates, values, colour, width=1.4):
     ax.plot(
         dates,
@@ -849,6 +860,7 @@ def small_multiples(
     shared=True,
     band=None,
     band_text=None,
+    y_label=None,
 ):
     gs = fig.add_gridspec(
         2,
@@ -857,8 +869,8 @@ def small_multiples(
         right=area["right"],
         top=area["top"],
         bottom=area["bottom"],
-        wspace=0.30,
-        hspace=0.55,
+        wspace=0.38,
+        hspace=0.78,
     )
     dates = get_datetimes(data, rows)
     limits = date_limits(dates)
@@ -896,7 +908,8 @@ def small_multiples(
         plot_series(ax, dates, values, colour, width=width)
         ax.set_ylim(low, high)
         style_panel(ax)
-        style_dates(ax, limits, show_labels=index >= 3, dense=False)
+        style_dates(ax, limits, show_labels=True, dense=False)
+        axis_titles(ax, TEXT[lang]["x_axis"], y_label or "", size=6.8)
         ax.set_title(label_of(entry, lang), loc="left", fontsize=8.5, color=INK_2, pad=3)
         latest = last_valid(values)
         if latest is not None:
@@ -922,7 +935,7 @@ def page_trends(data, rows, lang, page, pages, generated=None):
     page_header(fig, text["page_evolution"], text["sub_evolution"])
 
     gridspec = fig.add_gridspec(
-        2, 1, left=0.085, right=0.965, top=0.865, bottom=0.585, hspace=0.42
+        2, 1, left=0.085, right=0.965, top=0.865, bottom=0.575, hspace=0.58
     )
 
     mass = entry_for("Wk")
@@ -931,8 +944,8 @@ def page_trends(data, rows, lang, page, pages, generated=None):
     plot_series(ax_mass, dates, mass_values, INK, width=1.8)
     ax_mass.set_ylim(*padded_limits(mass_values, 0.10))
     style_panel(ax_mass)
-    style_dates(ax_mass, limits, show_labels=False)
-    ax_mass.set_title(f"{text['mass']} (kg)", loc="left", fontsize=9.5, color=INK, pad=4)
+    style_dates(ax_mass, limits, show_labels=True)
+    axis_titles(ax_mass, text["x_axis"], f"{text['mass']} (kg)", size=7.5)
     latest = last_valid(mass_values)
     if latest is not None:
         ax_mass.text(
@@ -956,7 +969,7 @@ def page_trends(data, rows, lang, page, pages, generated=None):
     ax_bmi.set_ylim(min(18.5, min(bmi_values) - 0.8), max(bmi_values) + 0.8)
     style_panel(ax_bmi)
     style_dates(ax_bmi, limits, show_labels=True)
-    ax_bmi.set_title(f"{text['bmi']} (kg/m²)", loc="left", fontsize=9.5, color=INK, pad=4)
+    axis_titles(ax_bmi, text["x_axis"], f"{text['bmi']} (kg/m²)", size=7.5)
     latest = last_valid(bmi_values)
     if latest is not None:
         ax_bmi.text(
@@ -971,11 +984,11 @@ def page_trends(data, rows, lang, page, pages, generated=None):
             color=INK,
         )
 
-    section_title(fig, 0.545, text["fat_segments"])
-    reference_legend(fig, 0.545, text["reference"])
+    section_title(fig, 0.528, text["fat_segments"])
+    reference_legend(fig, 0.528, text["reference"])
     small_multiples(
         fig,
-        {"left": 0.085, "right": 0.965, "top": 0.505, "bottom": 0.065},
+        {"left": 0.085, "right": 0.965, "top": 0.490, "bottom": 0.065},
         [entry_for(key) for key in FAT_KEYS],
         data,
         rows,
@@ -984,6 +997,7 @@ def page_trends(data, rows, lang, page, pages, generated=None):
         lang,
         band=(8, 20),
         band_text=text["fat_band"],
+        y_label=text["fat_panel"],
     )
 
     page_footer(fig, page, pages, lang, generated)
@@ -998,8 +1012,8 @@ def markers_panels(fig, area, data, rows, lang):
         right=area["right"],
         top=area["top"],
         bottom=area["bottom"],
-        wspace=0.30,
-        hspace=0.65,
+        wspace=0.34,
+        hspace=0.82,
     )
     dates = get_datetimes(data, rows)
     limits = date_limits(dates)
@@ -1013,7 +1027,7 @@ def markers_panels(fig, area, data, rows, lang):
     ax.set_ylim(0, max(14, max(clean) + 1))
     ax.yaxis.set_major_locator(MaxNLocator(integer=True, nbins=5))
     style_panel(ax)
-    style_dates(ax, limits, show_labels=False, short=True)
+    style_dates(ax, limits, show_labels=True, short=True)
     ax.set_title(
         f"{text['visceral']} ({unit_of(entry_for('IF'), lang)})",
         loc="left",
@@ -1021,6 +1035,7 @@ def markers_panels(fig, area, data, rows, lang):
         color=INK_2,
         pad=3,
     )
+    axis_titles(ax, text["x_axis"], text["y_level"], size=7.5)
     ax.text(
         0.99,
         12.2,
@@ -1040,7 +1055,7 @@ def markers_panels(fig, area, data, rows, lang):
     ax.set_ylim(*padded_limits(real + metabolic, 0.10))
     ax.yaxis.set_major_locator(MaxNLocator(integer=True, nbins=5))
     style_panel(ax)
-    style_dates(ax, limits, show_labels=False, short=True)
+    style_dates(ax, limits, show_labels=True, short=True)
     ax.set_title(
         f"{text['metabolic_age']} ({unit_of(entry_for('rA'), lang)})",
         loc="left",
@@ -1048,6 +1063,7 @@ def markers_panels(fig, area, data, rows, lang):
         color=INK_2,
         pad=16,
     )
+    axis_titles(ax, text["x_axis"], text["y_years"], size=7.5)
     handles = [
         Line2D(
             [0],
@@ -1086,6 +1102,7 @@ def markers_panels(fig, area, data, rows, lang):
         color=INK_2,
         pad=3,
     )
+    axis_titles(ax, text["x_axis"], unit_of(entry_for("rD"), lang), size=7.5)
 
     ax = fig.add_subplot(gs[1, 1])
     values = get_values(data, "ww", rows)
@@ -1102,6 +1119,7 @@ def markers_panels(fig, area, data, rows, lang):
         color=INK_2,
         pad=3,
     )
+    axis_titles(ax, text["x_axis"], unit_of(entry_for("ww"), lang), size=7.5)
 
 
 def page_markers(data, rows, lang, page, pages, generated=None):
@@ -1112,7 +1130,7 @@ def page_markers(data, rows, lang, page, pages, generated=None):
     section_title(fig, 0.885, text["muscle_segments"])
     small_multiples(
         fig,
-        {"left": 0.085, "right": 0.965, "top": 0.855, "bottom": 0.535},
+        {"left": 0.085, "right": 0.965, "top": 0.855, "bottom": 0.545},
         [entry_for(key) for key in MUSCLE_KEYS],
         data,
         rows,
@@ -1120,12 +1138,13 @@ def page_markers(data, rows, lang, page, pages, generated=None):
         None,
         lang,
         shared=False,
+        y_label=text["muscle_panel"],
     )
 
-    section_title(fig, 0.495, text["markers"])
+    section_title(fig, 0.487, text["markers"])
     markers_panels(
         fig,
-        {"left": 0.085, "right": 0.965, "top": 0.45, "bottom": 0.065},
+        {"left": 0.085, "right": 0.965, "top": 0.44, "bottom": 0.065},
         data,
         rows,
         lang,
